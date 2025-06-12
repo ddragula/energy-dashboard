@@ -7,6 +7,7 @@ import Dashboards from '@highcharts/dashboards/es-modules/masters/dashboards.src
 import '@highcharts/dashboards/es-modules/masters/modules/layout.src';
 import '@highcharts/dashboards/css/dashboards.css';
 import extremesSync from './syncs/extremesSync';
+import crosshairSync from './syncs/crosshairSync';
 import './styles.css';
 
 Dashboards.HighchartsPlugin.custom.connectHighcharts(Highcharts);
@@ -40,6 +41,13 @@ Highcharts.setOptions({
             title: 'Pokaż wszystkie dane'
         }]
     },
+    xAxis: {
+        crosshair: {
+            snap: false,
+            zIndex: 5,
+            color: '#5555'
+        }
+    },
     plotOptions: {
         series: {
             dataGrouping: {
@@ -66,6 +74,12 @@ Dashboards.board('dashboard', {
             type: 'CSV',
             options: {
                 csvURL: '/data/2025-entsoe15m.csv'
+            }
+        }, {
+            id: 'entsoe1h',
+            type: 'CSV',
+            options: {
+                csvURL: '/data/2025-entsoe1h.csv'
             }
         }]
     },
@@ -96,6 +110,10 @@ Dashboards.board('dashboard', {
             }, {
                 cells: [{
                     id: 'generation-chart'
+                }]
+            }, {
+                cells: [{
+                    id: 'prices-chart'
                 }]
             }]
         }]
@@ -194,7 +212,7 @@ Dashboards.board('dashboard', {
         },
         chartOptions: {
             title: {
-                text: 'Produkcja energii per źródło',
+                text: 'Produkcja energii',
                 align: 'left',
                 style: {
                     fontSize: '24px',
@@ -284,10 +302,56 @@ Dashboards.board('dashboard', {
                 visible: false
             }]
         }
+    }, {
+        type: 'Highcharts',
+        renderTo: 'prices-chart',
+        chartConstructor: 'stockChart',
+        connector: {
+            id: 'entsoe1h',
+            columnAssignment: [{
+                seriesId: 'price',
+                data: ['Date', 'Prices']
+            }, {
+                seriesId: 'netPositions',
+                data: ['Date', 'NetPositions']
+            }]
+        },
+        chartOptions: {
+            yAxis: [{
+                id: 'priceAxis',
+                height: '50%'
+            }, {
+                id: 'netPositionsAxis',
+                height: '50%',
+                top: '50%',
+            }],
+            rangeSelector: {
+                enabled: false
+            },
+            navigator: {
+                enabled: false
+            },
+            scrollbar: {
+                enabled: false
+            },
+            series: [{
+                type: 'areaspline',
+                id: 'netPositions',
+                name: 'Pozycje netto',
+                yAxis: 'netPositionsAxis',
+                dashStyle: 'ShortDash'
+            }, {
+                type: 'line',
+                id: 'price',
+                name: 'Cena energii',
+                yAxis: 'priceAxis'
+            }]
+        }
     }]
 }, true).then(async board => {
     const navigatorComponent = board.getComponentByCellId('navigator') as HighchartsComponent;
     const generationComponent = board.getComponentByCellId('generation-chart') as HighchartsComponent;
+    const pricesComponent = board.getComponentByCellId('prices-chart') as HighchartsComponent;
 
     const kpiComponents = {
         other: board.getComponentByCellId('kpi-other') as KPIComponent,
@@ -375,8 +439,14 @@ Dashboards.board('dashboard', {
 
     extremesSync([
         navigatorComponent.chart,
-        generationComponent.chart
+        generationComponent.chart,
+        pricesComponent.chart
     ], async (min, max) => {
         await setKPIRange(min, max);
     });
+
+    crosshairSync([
+        generationComponent.chart,
+        pricesComponent.chart
+    ])
 });
