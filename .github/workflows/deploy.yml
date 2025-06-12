@@ -3,7 +3,8 @@ name: Build & Deploy to gh-pages
 on:
   push:
     branches:
-      - main
+      - master
+
 jobs:
   build:
     runs-on: ubuntu-latest
