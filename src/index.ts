@@ -604,8 +604,8 @@ Dashboards.board('dashboard', {
         const year = (e.target as HTMLSelectElement).value;
 
 
-        generationConnector.options.csvURL = `/data/${year}-generation.csv`;
-        tradeConnector.options.csvURL = `/data/${year}-trade.csv`;
+        generationConnector.options.csvURL = `./data/${year}-generation.csv`;
+        tradeConnector.options.csvURL = `./data/${year}-trade.csv`;
 
         await generationConnector.load();
         await tradeConnector.load();
