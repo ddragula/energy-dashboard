@@ -29,6 +29,7 @@ module.exports = {
         new StylelintPlugin(),
         new HtmlWebpackPlugin({
             template: './src/index.html',
+            publicPath: './',
         }),
         new MiniCssExtractPlugin(),
         new CopyWebpackPlugin({
