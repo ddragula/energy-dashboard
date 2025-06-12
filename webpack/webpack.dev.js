@@ -7,7 +7,7 @@ module.exports = merge(common, {
     devServer: {
         static: {
             directory: path.resolve(__dirname, '../public'),
-            publicPath: '/',
+            publicPath: './',
             watch: true
         },
         devMiddleware: {
