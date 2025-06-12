@@ -20,33 +20,33 @@ Highcharts.setOptions({
             type: 'day',
             count: 1,
             text: '1d',
-            title: 'Pokaż 1 dzień'
+            title: 'Pokaż 1 dzień',
         }, {
             type: 'week',
             count: 1,
             text: '1w',
-            title: 'Pokaż 1 tydzień'
+            title: 'Pokaż 1 tydzień',
         }, {
             type: 'month',
             count: 1,
             text: '1m',
-            title: 'Pokaż 1 miesiąc'
+            title: 'Pokaż 1 miesiąc',
         }, {
             type: 'month',
             count: 3,
             text: '3m',
-            title: 'Pokaż 3 miesiące'
+            title: 'Pokaż 3 miesiące',
         }, {
             type: 'all',
             text: 'All',
-            title: 'Pokaż wszystkie dane'
-        }]
+            title: 'Pokaż wszystkie dane',
+        }],
     },
     xAxis: {
         crosshair: {
             snap: false,
             zIndex: 5,
-            color: '#5555'
+            color: '#5555',
         }
     },
     plotOptions: {
@@ -262,7 +262,7 @@ Dashboards.board('dashboard', {
                     },
                     tooltip: {
                         footerFormat: '● Total: <b>{point.total:,.0f} MW</b>',
-                        valueSuffix: ' MW ({(multiply (divide point.y point.total) 100):.2f}%)'   
+                        valueSuffix: ' MW ({(multiply (divide point.y point.total) 100):.2f}%)',
                     },
                     showInLegend: false
                 }
@@ -443,13 +443,13 @@ Dashboards.board('dashboard', {
         biomass: board.getComponentByCellId('kpi-biomass') as KPIComponent,
         wind: board.getComponentByCellId('kpi-wind') as KPIComponent,
         solar: board.getComponentByCellId('kpi-solar') as KPIComponent,
-        hydro: board.getComponentByCellId('kpi-hydro') as KPIComponent
-    }
+        hydro: board.getComponentByCellId('kpi-hydro') as KPIComponent,
+    };
 
     const tradeKpis = {
         price: board.getComponentByCellId('kpi-price') as KPIComponent,
-        net: board.getComponentByCellId('kpi-net') as KPIComponent
-    }
+        net: board.getComponentByCellId('kpi-net') as KPIComponent,
+    };
 
     Object.keys(kpiComponents).forEach((key: keyof typeof kpiComponents) => {
         const kpiComponent = kpiComponents[key];
@@ -471,8 +471,6 @@ Dashboards.board('dashboard', {
     async function setKPIRange(min: number, max: number) {
         const columns15m = generationConnector.table.getColumns();
         const columns1h = tradeConnector.table.getColumns();
-
-        console.log();
 
         const sums = {
             // Generation KPIs
@@ -498,8 +496,8 @@ Dashboards.board('dashboard', {
             // Trade KPIs
             price: 0,
             priceCount: 0,
-            net: 0
-        }
+            net: 0,
+        };
 
         for (let i = 0, iEnd = columns15m['Date'].length; i < iEnd; ++i) {
             const date = Number(columns15m['Date'][i]);
@@ -574,7 +572,7 @@ Dashboards.board('dashboard', {
                     <div class="percentage">{(${percentage}):,.2f} %</div>
                     <div class="value">{value:,.${decimalPlaces}f} GWh</div>
                 `,
-            })
+            });
         });
 
         tradeKpis.price.setValue(sums.price / sums.priceCount);
@@ -592,14 +590,14 @@ Dashboards.board('dashboard', {
     extremesSync([
         navigatorComponent.chart,
         generationComponent.chart,
-        pricesComponent.chart
+        pricesComponent.chart,
     ], async (min, max) => {
         setKPIRange(min, max);
     });
 
     crosshairSync([
         generationComponent.chart,
-        pricesComponent.chart
+        pricesComponent.chart,
     ]);
 
     document.getElementById('year-select')?.addEventListener('change', async e => {

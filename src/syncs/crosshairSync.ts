@@ -1,4 +1,4 @@
-import type { Chart } from "highcharts";
+import type { Chart } from 'highcharts';
 
 import Highcharts from 'highcharts/es-modules/masters/highstock.src';
 import emitter from '../emitter';
@@ -54,7 +54,7 @@ export default function (charts: Chart[]) {
             emitter.emit(eventName + '_mousemove', {
                 chart: chart,
                 x: chart.xAxis[0].toValue(e.chartX)
-            })
+            });
         });
 
         chart.container.addEventListener('mouseleave', function () {

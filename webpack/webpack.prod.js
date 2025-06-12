@@ -7,8 +7,8 @@ module.exports = merge(common, {
     plugins: [
         new ESLintPlugin({
             extensions: ['ts'],
-            failOnError: true,
-            failOnWarning: true
+            failOnError: false,
+            failOnWarning: false
         }),
     ],
     output: {

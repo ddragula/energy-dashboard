@@ -1,4 +1,4 @@
-import type { Chart } from "highcharts";
+import type { Chart } from 'highcharts';
 
 import Highcharts from 'highcharts/es-modules/masters/highstock.src';
 import emitter from '../emitter';
@@ -14,7 +14,7 @@ export default function (charts: Chart[], callback?: (min: number, max: number) 
         for (const c of charts) {
             if (c !== chart) {
                 c.xAxis[0].setExtremes(min, max, true, false, {
-                    trigger: 'extremesSync'
+                    trigger: 'extremesSync',
                 });
             }
         }
@@ -31,7 +31,7 @@ export default function (charts: Chart[], callback?: (min: number, max: number) 
             emitter.emit(eventName, {
                 chart: chart,
                 min: e.min,
-                max: e.max
+                max: e.max,
             }, false);
         });
     }

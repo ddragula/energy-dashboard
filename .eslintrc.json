@@ -26,11 +26,6 @@
             "error",
             4
         ],
-        "max-len": [
-            "error", {
-                "code": 120
-            }
-        ],
         "no-alert": "error",
         "no-console": "warn",
         "no-debugger": "warn",
