@@ -1,0 +1,69 @@
+body {
+    background-color: #f2f2f2;
+}
+
+.highcharts-dashboards-component-kpi-value {
+    margin-bottom: 18px;
+}
+
+.highcharts-dashboards-component-kpi-value .percentage {
+    font-size: 0.9em;
+}
+
+.highcharts-dashboards-component-kpi-value .value {
+    font-size: 0.5em;
+}
+
+.highcharts-dashboards-component-kpi {
+    cursor: pointer;
+}
+
+.highcharts-dashboards-component-kpi:has(.inactive) {
+    border-color: #ccc !important;
+    border-style: dashed !important;
+    opacity: 0.5;
+}
+
+.highcharts-dashboards-component-kpi:hover .highcharts-dashboards-component-title {
+    text-decoration: underline;
+}
+
+.highcharts-dashboards-component-kpi:has(.inactive) .highcharts-dashboards-component-title {
+    text-decoration: line-through;
+}
+
+.highcharts-dashboards-component-kpi:hover {
+    opacity: 1;
+}
+
+#kpi-hydro .highcharts-dashboards-component-kpi {
+    border: 5px solid #1E90FF;
+}
+
+#kpi-solar .highcharts-dashboards-component-kpi {
+    border: 5px solid #FFD700;
+}
+
+#kpi-wind .highcharts-dashboards-component-kpi {
+    border: 5px solid #32CD32;
+}
+
+#kpi-biomass .highcharts-dashboards-component-kpi {
+    border: 5px solid #8B4513;
+}
+
+#kpi-gas .highcharts-dashboards-component-kpi {
+    border: 5px solid #FF4500;
+}
+
+#kpi-coal .highcharts-dashboards-component-kpi {
+    border: 5px solid #333;
+}
+
+#kpi-oil .highcharts-dashboards-component-kpi {
+    border: 5px solid #8B0000;
+}
+
+#kpi-other .highcharts-dashboards-component-kpi {
+    border: 5px solid #808080;
+}
