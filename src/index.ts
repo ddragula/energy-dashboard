@@ -74,13 +74,13 @@ Dashboards.board('dashboard', {
             id: 'generation',
             type: 'CSV',
             options: {
-                csvURL: '/data/2025-generation.csv'
+                csvURL: './data/2025-generation.csv'
             }
         }, {
             id: 'trade',
             type: 'CSV',
             options: {
-                csvURL: '/data/2025-trade.csv'
+                csvURL: './data/2025-trade.csv'
             }
         }]
     },
