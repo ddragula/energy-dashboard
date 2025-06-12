@@ -9,6 +9,7 @@ import '@highcharts/dashboards/css/dashboards.css';
 import extremesSync from './syncs/extremesSync';
 import crosshairSync from './syncs/crosshairSync';
 import './styles.css';
+import CSVConnector from '@highcharts/dashboards/es-modules/Data/Connectors/CSVConnector';
 
 Dashboards.HighchartsPlugin.custom.connectHighcharts(Highcharts);
 Dashboards.PluginHandler.addPlugin(Dashboards.HighchartsPlugin);
@@ -70,16 +71,16 @@ Highcharts.setOptions({
 Dashboards.board('dashboard', {
     dataPool: {
         connectors: [{
-            id: 'entsoe15m',
+            id: 'generation',
             type: 'CSV',
             options: {
-                csvURL: '/data/2025-entsoe15m.csv'
+                csvURL: '/data/2025-generation.csv'
             }
         }, {
-            id: 'entsoe1h',
+            id: 'trade',
             type: 'CSV',
             options: {
-                csvURL: '/data/2025-entsoe1h.csv'
+                csvURL: '/data/2025-trade.csv'
             }
         }]
     },
@@ -87,6 +88,8 @@ Dashboards.board('dashboard', {
         layouts: [{
             rows: [{
                 cells: [{
+                    id: 'html-title'
+                }, {
                     id: 'navigator'
                 }]
             }, {
@@ -114,16 +117,51 @@ Dashboards.board('dashboard', {
             }, {
                 cells: [{
                     id: 'prices-chart'
+                }, {
+                    id: 'prices-kpi-block',
+                    layout: {
+                        rows: [{
+                            cells: [{
+                                id: 'kpi-price'
+                            }]
+                        }, {
+                            cells: [{
+                                id: 'kpi-net'
+                            }]
+                        }]
+                    }
                 }]
             }]
         }]
     },
     components: [{
+        type: 'HTML',
+        renderTo: 'html-title',
+        html: `
+            <div class="title-container">
+                <div class="title">
+                    <h1>Energia w Polsce</h1>
+                    <p class="subtitle">produkcja i handel</p>
+                </div>
+                <div class="year-selector-container">
+                    <div>
+                        Dane z roku:
+                        <select id="year-select">
+                            <option value="2025" selected>2025</option>
+                            <option value="2024">2024</option>
+                            <option value="2023">2023</option>
+                            <option value="2022">2022</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        `
+    }, {
         type: 'Highcharts',
         renderTo: 'navigator',
         chartConstructor: 'stockChart',
         connector: {
-            id: 'entsoe15m',
+            id: 'generation',
             columnAssignment: [{
                 seriesId: 'load',
                 data: ['Date', 'Load']
@@ -131,10 +169,7 @@ Dashboards.board('dashboard', {
         },
         chartOptions: {
             chart: {
-                height: 100
-            },
-            scrollbar: {
-                enabled: false
+                height: 110
             },
             xAxis: {
                 visible: false
@@ -180,7 +215,7 @@ Dashboards.board('dashboard', {
         renderTo: 'generation-chart',
         chartConstructor: 'stockChart',
         connector: {
-            id: 'entsoe15m',
+            id: 'generation',
             columnAssignment: [{
                 seriesId: 'Biomass',
                 data: ['Date', 'Gen-Biomass']
@@ -230,6 +265,11 @@ Dashboards.board('dashboard', {
                         valueSuffix: ' MW ({(multiply (divide point.y point.total) 100):.2f}%)'   
                     },
                     showInLegend: false
+                }
+            },
+            yAxis: {
+                title: {
+                    text: 'Produkcja energii (MW)',
                 }
             },
             rangeSelector: {
@@ -307,7 +347,7 @@ Dashboards.board('dashboard', {
         renderTo: 'prices-chart',
         chartConstructor: 'stockChart',
         connector: {
-            id: 'entsoe1h',
+            id: 'trade',
             columnAssignment: [{
                 seriesId: 'price',
                 data: ['Date', 'Prices']
@@ -319,12 +359,28 @@ Dashboards.board('dashboard', {
         chartOptions: {
             yAxis: [{
                 id: 'priceAxis',
-                height: '50%'
+                height: '45%',
+                title: {
+                    text: 'Cena energii (€/MWh)',
+                },
+                offset: 0
             }, {
                 id: 'netPositionsAxis',
-                height: '50%',
+                height: '45%',
                 top: '50%',
+                title: {
+                    text: 'Pozycje netto (MW)',
+                },
+                offset: 0
             }],
+            title: {
+                text: 'Ceny energii i pozycje netto',
+                align: 'left',
+                style: {
+                    fontSize: '24px',
+                    fontWeight: 'bold'
+                }
+            },
             rangeSelector: {
                 enabled: false
             },
@@ -339,19 +395,45 @@ Dashboards.board('dashboard', {
                 id: 'netPositions',
                 name: 'Pozycje netto',
                 yAxis: 'netPositionsAxis',
-                dashStyle: 'ShortDash'
+                zones: [{
+                    value: 0,
+                    color: '#f00'
+                }, {
+                    color: '#0d0'
+                }],
+                tooltip: {
+                    valueDecimals: 0,
+                    valueSuffix: ' MW'
+                }
             }, {
                 type: 'line',
                 id: 'price',
                 name: 'Cena energii',
-                yAxis: 'priceAxis'
+                yAxis: 'priceAxis',
+                tooltip: {
+                    valueDecimals: 2,
+                    valueSuffix: ' €/MWh'
+                }
             }]
         }
+    }, {
+        type: 'KPI',
+        renderTo: 'kpi-price',
+        title: 'Średnia cena energii',
+        valueFormat: '<strong class="value">{value:,.2f}</strong><br><span style="font-size: 0.8em">€/MWh</span>'
+    }, {
+        type: 'KPI',
+        renderTo: 'kpi-net',
+        title: 'Bilans handlowy',
+        valueFormat: '<strong class="value">{value:,.2f}</strong><br><span style="font-size: 0.8em">GWh</span>'
     }]
 }, true).then(async board => {
     const navigatorComponent = board.getComponentByCellId('navigator') as HighchartsComponent;
     const generationComponent = board.getComponentByCellId('generation-chart') as HighchartsComponent;
     const pricesComponent = board.getComponentByCellId('prices-chart') as HighchartsComponent;
+
+    const generationConnector = await board.dataPool.getConnector('generation') as CSVConnector;
+    const tradeConnector = await board.dataPool.getConnector('trade') as CSVConnector;
 
     const kpiComponents = {
         other: board.getComponentByCellId('kpi-other') as KPIComponent,
@@ -362,6 +444,11 @@ Dashboards.board('dashboard', {
         wind: board.getComponentByCellId('kpi-wind') as KPIComponent,
         solar: board.getComponentByCellId('kpi-solar') as KPIComponent,
         hydro: board.getComponentByCellId('kpi-hydro') as KPIComponent
+    }
+
+    const tradeKpis = {
+        price: board.getComponentByCellId('kpi-price') as KPIComponent,
+        net: board.getComponentByCellId('kpi-net') as KPIComponent
     }
 
     Object.keys(kpiComponents).forEach((key: keyof typeof kpiComponents) => {
@@ -382,37 +469,93 @@ Dashboards.board('dashboard', {
     });
 
     async function setKPIRange(min: number, max: number) {
-        const dataTable = await board.dataPool.getConnectorTable('entsoe15m');
-        const columns = dataTable.columns;
+        const columns15m = generationConnector.table.getColumns();
+        const columns1h = tradeConnector.table.getColumns();
+
+        console.log();
+
         const sums = {
+            // Generation KPIs
             other: 0,
+            otherGWh: 0,
             oil: 0,
+            oilGWh: 0,
             coal: 0,
+            coalGWh: 0,
             gas: 0,
+            gasGWh: 0,
             biomass: 0,
+            biomassGWh: 0,
             wind: 0,
+            windGWh: 0,
             solar: 0,
+            solarGWh: 0,
             hydro: 0,
-            total: 0
+            hydroGWh: 0,
+            total: 0,
+            totalGWh: 0,
+
+            // Trade KPIs
+            price: 0,
+            priceCount: 0,
+            net: 0
         }
 
-        for (let i = 0, iEnd = columns['Date'].length; i < iEnd; ++i) {
-            const date = Number(columns['Date'][i]);
+        for (let i = 0, iEnd = columns15m['Date'].length; i < iEnd; ++i) {
+            const date = Number(columns15m['Date'][i]);
             if (date < min || date > max) {
                 continue;
             }
 
-            sums.other += Number(columns['Gen-Other'][i] || 0);
-            sums.oil += Number(columns['Gen-Oil'][i] || 0);
-            sums.coal += Number(columns['Gen-Coal'][i] || 0);
-            sums.gas += Number(columns['Gen-Gas'][i] || 0);
-            sums.biomass += Number(columns['Gen-Biomass'][i] || 0);
-            sums.wind += Number(columns['Gen-Wind'][i] || 0);
-            sums.solar += Number(columns['Gen-Solar'][i] || 0);
-            sums.hydro += Number(columns['Gen-Hydro'][i] || 0);
+            const hInterval = (Number(columns15m['Date'][i + 1]) - date) / 36e5;
+
+            if (hInterval !== 0.25) {
+                console.log(hInterval);
+            }
+
+            const other = Number(columns15m['Gen-Other'][i] || 0);
+            const oil = Number(columns15m['Gen-Oil'][i] || 0);
+            const coal = Number(columns15m['Gen-Coal'][i] || 0);
+            const gas = Number(columns15m['Gen-Gas'][i] || 0);
+            const biomass = Number(columns15m['Gen-Biomass'][i] || 0);
+            const wind = Number(columns15m['Gen-Wind'][i] || 0);
+            const solar = Number(columns15m['Gen-Solar'][i] || 0);
+            const hydro = Number(columns15m['Gen-Hydro'][i] || 0);
+
+            sums.other += other;
+            sums.oil += oil;
+            sums.coal += coal;
+            sums.gas += gas;
+            sums.biomass += biomass;
+            sums.wind += wind;
+            sums.solar += solar;
+            sums.hydro += hydro;
+
+            if (!isNaN(hInterval)) {
+                sums.otherGWh += other * hInterval * 0.001;
+                sums.oilGWh += oil * hInterval * 0.001;
+                sums.coalGWh += coal * hInterval * 0.001;
+                sums.gasGWh += gas * hInterval * 0.001;
+                sums.biomassGWh += biomass * hInterval * 0.001;
+                sums.windGWh += wind * hInterval * 0.001;
+                sums.solarGWh += solar * hInterval * 0.001;
+                sums.hydroGWh += hydro * hInterval * 0.001;
+            }
+        }
+
+        for (let i = 0, iEnd = columns1h['Date'].length; i < iEnd; ++i) {
+            const date = Number(columns1h['Date'][i]);
+            if (date < min || date > max) {
+                continue;
+            }
+
+            sums.net += Number(columns1h['NetPositions'][i] || 0);
+            sums.price += Number(columns1h['Prices'][i]);
+            sums.priceCount += 1;
         }
 
         sums.total = sums.other + sums.oil + sums.coal + sums.gas + sums.biomass + sums.wind + sums.solar + sums.hydro;
+        sums.totalGWh = sums.otherGWh + sums.oilGWh + sums.coalGWh + sums.gasGWh + sums.biomassGWh + sums.windGWh + sums.solarGWh + sums.hydroGWh;
 
         Object.keys(kpiComponents).forEach((key: keyof typeof kpiComponents) => {
             const kpiComponent = kpiComponents[key];
@@ -420,7 +563,7 @@ Dashboards.board('dashboard', {
                 return;
             }
 
-            const GWh = sums[key] / 4000; // Convert from MW to GWh (15 min intervals)
+            const GWh = sums[key + 'GWh' as 'otherGWh' | 'oilGWh' | 'coalGWh' | 'gasGWh' | 'biomassGWh' | 'windGWh' | 'solarGWh' | 'hydroGWh'] || 0;
 
             const decimalPlaces = GWh < 10 ? 2 : GWh < 100 ? 1 : 0;
             const percentage = sums[key] / sums.total * 100;
@@ -432,21 +575,43 @@ Dashboards.board('dashboard', {
                     <div class="value">{value:,.${decimalPlaces}f} GWh</div>
                 `,
             })
-        })
+        });
+
+        tradeKpis.price.setValue(sums.price / sums.priceCount);
+        tradeKpis.net.setValue(sums.net * 0.001);
+
+        if (sums.net < 0) {
+            tradeKpis.net.contentElement.classList.add('negative');
+        } else {
+            tradeKpis.net.contentElement.classList.remove('negative');
+        }
     }
 
-    await setKPIRange(-Infinity, Infinity);
+    setKPIRange(-Infinity, Infinity);
 
     extremesSync([
         navigatorComponent.chart,
         generationComponent.chart,
         pricesComponent.chart
     ], async (min, max) => {
-        await setKPIRange(min, max);
+        setKPIRange(min, max);
     });
 
     crosshairSync([
         generationComponent.chart,
         pricesComponent.chart
-    ])
+    ]);
+
+    document.getElementById('year-select')?.addEventListener('change', async e => {
+        const year = (e.target as HTMLSelectElement).value;
+
+
+        generationConnector.options.csvURL = `/data/${year}-generation.csv`;
+        tradeConnector.options.csvURL = `/data/${year}-trade.csv`;
+
+        await generationConnector.load();
+        await tradeConnector.load();
+
+        navigatorComponent.chart?.xAxis[0].setExtremes(null, null, true, false);
+    });
 });
