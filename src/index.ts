@@ -507,10 +507,6 @@ Dashboards.board('dashboard', {
 
             const hInterval = (Number(columns15m['Date'][i + 1]) - date) / 36e5;
 
-            if (hInterval !== 0.25) {
-                console.log(hInterval);
-            }
-
             const other = Number(columns15m['Gen-Other'][i] || 0);
             const oil = Number(columns15m['Gen-Oil'][i] || 0);
             const coal = Number(columns15m['Gen-Coal'][i] || 0);
