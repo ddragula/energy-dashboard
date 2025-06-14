@@ -270,7 +270,8 @@ Dashboards.board('dashboard', {
             yAxis: {
                 title: {
                     text: 'Produkcja energii (MW)',
-                }
+                },
+                opposite: false
             },
             rangeSelector: {
                 enabled: false
@@ -363,7 +364,8 @@ Dashboards.board('dashboard', {
                 title: {
                     text: 'Cena energii (€/MWh)',
                 },
-                offset: 0
+                offset: 0,
+                opposite: false
             }, {
                 id: 'netPositionsAxis',
                 height: '45%',
@@ -371,7 +373,8 @@ Dashboards.board('dashboard', {
                 title: {
                     text: 'Pozycje netto (MW)',
                 },
-                offset: 0
+                offset: 0,
+                opposite: false
             }],
             title: {
                 text: 'Ceny energii i pozycje netto',
