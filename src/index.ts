@@ -568,7 +568,7 @@ Dashboards.board('dashboard', {
             kpiComponent.update({
                 value: GWh,
                 valueFormat: `
-                    <div class="percentage">{(${percentage}):,.2f} %</div>
+                    <div class="percentage">{(${percentage}):,.2f}%</div>
                     <div class="value">{value:,.${decimalPlaces}f} GWh</div>
                 `,
             });
