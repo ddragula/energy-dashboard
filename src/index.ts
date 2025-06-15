@@ -1,5 +1,6 @@
 import type HighchartsComponent from '@highcharts/dashboards/es-modules/Dashboards/Components/HighchartsComponent/HighchartsComponent';
 import type KPIComponent from '@highcharts/dashboards/es-modules/Dashboards/Components/KPIComponent/KPIComponent';
+import type CSVConnector from '@highcharts/dashboards/es-modules/Data/Connectors/CSVConnector';
 
 import Highcharts from 'highcharts/es-modules/masters/highstock.src';
 import 'highcharts/es-modules/masters/modules/boost.src';
@@ -9,7 +10,6 @@ import '@highcharts/dashboards/css/dashboards.css';
 import extremesSync from './syncs/extremesSync';
 import crosshairSync from './syncs/crosshairSync';
 import './styles.css';
-import CSVConnector from '@highcharts/dashboards/es-modules/Data/Connectors/CSVConnector';
 
 Dashboards.HighchartsPlugin.custom.connectHighcharts(Highcharts);
 Dashboards.PluginHandler.addPlugin(Dashboards.HighchartsPlugin);
